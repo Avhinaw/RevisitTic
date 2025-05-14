@@ -3,7 +3,10 @@ const board = document.getElementById("board");
 const cells = document.querySelectorAll(".cells");
 const reset = document.getElementById("reset");
 const winMsg = document.getElementById("win-msg");
+const playerX = document.getElementById("player-x");
+const playerO = document.getElementById("player-o");
 let player = 1;
+playerX === null || playerX === void 0 ? void 0 : playerX.classList.add('scale-125');
 let totalTurn = 1;
 let boardArr = Array(9).fill("E");
 const winner = [
@@ -40,9 +43,10 @@ const game = (e) => {
         if (checkWinner()) {
             winMsg.innerText = "Player 1 Wins";
             board.removeEventListener("click", game);
-            // totalTurn = 1;
             return;
         }
+        playerX.classList.remove('scale-125');
+        playerO.classList.add('scale-125');
         player = 2;
     }
     else {
@@ -51,9 +55,10 @@ const game = (e) => {
         if (checkWinner()) {
             winMsg.innerText = "Player 2 Wins";
             board.removeEventListener("click", game);
-            //   totalTurn = 1;
             return;
         }
+        playerO.classList.remove('scale-125');
+        playerX.classList.add('scale-125');
         player = 1;
     }
     if (totalTurn === 10) {
@@ -71,5 +76,7 @@ const clearCells = () => {
     player = 1;
     totalTurn = 1;
     board.addEventListener("click", game);
+    playerO.classList.remove('scale-125');
+    playerX.classList.add('scale-125');
 };
 reset.addEventListener("click", clearCells);
