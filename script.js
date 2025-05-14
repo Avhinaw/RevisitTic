@@ -1,7 +1,12 @@
 "use strict";
 const board = document.getElementById("board");
+const cells = document.querySelectorAll(".cells");
+const reset = document.getElementById("reset");
+const winMsg = document.getElementById("win-msg");
 let player = 1;
-let winner = [
+let totalTurn = 1;
+let boardArr = Array(9).fill("E");
+const winner = [
     [1, 2, 3],
     [4, 5, 6],
     [7, 8, 9],
@@ -9,28 +14,62 @@ let winner = [
     [2, 5, 8],
     [3, 6, 9],
     [1, 5, 9],
-    [3, 5, 7]
+    [3, 5, 7],
 ];
-const boardArr = Array(9).fill('E');
 const checkWinner = () => {
+    for (let [idx0, idx1, idx2] of winner) {
+        const a = boardArr[idx0 - 1];
+        const b = boardArr[idx1 - 1];
+        const c = boardArr[idx2 - 1];
+        if (a !== "E" && a === b && b === c) {
+            return true;
+        }
+    }
+    return false;
 };
-board.addEventListener("click", (e) => {
-    let el = e.target;
-    if (player == 1) {
-        el.innerText = 'x';
-        boardArr[parseInt(el.id) - 1] = 'x';
+const game = (e) => {
+    const el = e.target;
+    const cellId = parseInt(el.id);
+    // Prevent playing on already filled cell
+    if (boardArr[cellId - 1] !== "E")
+        return;
+    totalTurn++;
+    if (player === 1) {
+        el.innerText = "x";
+        boardArr[cellId - 1] = "x";
+        if (checkWinner()) {
+            winMsg.innerText = "Player 1 Wins";
+            board.removeEventListener("click", game);
+            // totalTurn = 1;
+            return;
+        }
         player = 2;
     }
     else {
-        el.innerText = 'o';
+        el.innerText = "o";
+        boardArr[cellId - 1] = "o";
+        if (checkWinner()) {
+            winMsg.innerText = "Player 2 Wins";
+            board.removeEventListener("click", game);
+            //   totalTurn = 1;
+            return;
+        }
         player = 1;
     }
-});
-const reset = document.getElementById("reset");
-const cells = document.querySelectorAll(".cells");
-reset.addEventListener('click', (e) => {
+    if (totalTurn === 10) {
+        winMsg.innerText = "Game Draw";
+        return;
+    }
+};
+board.addEventListener("click", game);
+const clearCells = () => {
     cells.forEach((cell) => {
-        cell.innerHTML = '';
+        cell.innerHTML = "";
     });
+    boardArr = Array(9).fill("E");
+    winMsg.innerText = "";
     player = 1;
-});
+    totalTurn = 1;
+    board.addEventListener("click", game);
+};
+reset.addEventListener("click", clearCells);
